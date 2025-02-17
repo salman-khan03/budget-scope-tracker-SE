@@ -1,7 +1,6 @@
 
 import { Card } from "@/components/ui/card";
 import { ThemeToggle } from "./ThemeToggle";
-import { Chart } from "recharts";
 import {
   LineChart,
   Line,
