@@ -36,6 +36,13 @@ export function TransactionForm({ onSuccess, initialData }: TransactionFormProps
     setIsLoading(true);
 
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast.error("You must be logged in to perform this action");
+        return;
+      }
+
       if (initialData) {
         const { error } = await supabase
           .from("transactions")
@@ -44,20 +51,20 @@ export function TransactionForm({ onSuccess, initialData }: TransactionFormProps
             type,
             category,
             description,
+            user_id: user.id,
           })
           .eq("id", initialData.id);
 
         if (error) throw error;
         toast.success("Transaction updated successfully");
       } else {
-        const { error } = await supabase.from("transactions").insert([
-          {
-            amount: Number(amount),
-            type,
-            category,
-            description,
-          },
-        ]);
+        const { error } = await supabase.from("transactions").insert({
+          amount: Number(amount),
+          type,
+          category,
+          description,
+          user_id: user.id,
+        });
 
         if (error) throw error;
         toast.success("Transaction added successfully");

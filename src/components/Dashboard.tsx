@@ -1,4 +1,3 @@
-
 import { Card } from "@/components/ui/card";
 import { ThemeToggle } from "./ThemeToggle";
 import {
@@ -37,9 +36,18 @@ export function Dashboard() {
 
   const fetchTransactions = async () => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast.error("Please log in to view your transactions");
+        setIsLoading(false);
+        return;
+      }
+
       const { data, error } = await supabase
         .from("transactions")
         .select("*")
+        .eq("user_id", user.id)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
@@ -54,6 +62,26 @@ export function Dashboard() {
 
   useEffect(() => {
     fetchTransactions();
+
+    // Subscribe to changes in the transactions table
+    const channel = supabase
+      .channel('schema-db-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'transactions'
+        },
+        () => {
+          fetchTransactions();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      channel.unsubscribe();
+    };
   }, []);
 
   const totalBalance = transactions.reduce(
