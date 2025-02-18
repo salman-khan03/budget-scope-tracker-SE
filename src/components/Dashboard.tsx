@@ -4,7 +4,7 @@ import { TransactionForm } from "./TransactionForm";
 import { TransactionList } from "./TransactionList";
 import { StatsCards } from "./dashboard/StatsCards";
 import { TransactionCharts } from "./dashboard/TransactionCharts";
-import { useTransactions } from "@/hooks/use-transactions";
+import { useTransactions, Transaction } from "@/hooks/use-transactions";
 import { useState } from "react";
 
 export function Dashboard() {

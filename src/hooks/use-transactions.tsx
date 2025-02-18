@@ -18,18 +18,9 @@ export function useTransactions() {
 
   const fetchTransactions = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        toast.error("Please log in to view your transactions");
-        setIsLoading(false);
-        return;
-      }
-
       const { data, error } = await supabase
         .from("transactions")
         .select("*")
-        .eq("user_id", user.id)
         .order("created_at", { ascending: false });
 
       if (error) throw error;

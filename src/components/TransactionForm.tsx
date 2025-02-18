@@ -36,13 +36,6 @@ export function TransactionForm({ onSuccess, initialData }: TransactionFormProps
     setIsLoading(true);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        toast.error("You must be logged in to perform this action");
-        return;
-      }
-
       if (initialData) {
         const { error } = await supabase
           .from("transactions")
@@ -51,7 +44,6 @@ export function TransactionForm({ onSuccess, initialData }: TransactionFormProps
             type,
             category,
             description,
-            user_id: user.id,
           })
           .eq("id", initialData.id);
 
@@ -63,7 +55,6 @@ export function TransactionForm({ onSuccess, initialData }: TransactionFormProps
           type,
           category,
           description,
-          user_id: user.id,
         });
 
         if (error) throw error;
